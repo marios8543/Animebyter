@@ -2,10 +2,9 @@ from aiohttp import ClientSession
 from feedparser import parse
 from os import getenv
 from json import dumps
-from logging import getLogger
+import logging
 
 web = ClientSession()
-logger = getLogger("animebyter")
 
 class Anime:
     def __eq__(self,other):
@@ -33,5 +32,5 @@ async def get_airing():
                     link = i['link']
                     r.append(Anime(title,ep,link,i['ab_torrentproperty'].split("|")[3]))
                 except Exception as e:
-                    logger.error(str(e))
+                    logging.error(str(e))
         return r

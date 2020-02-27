@@ -2,7 +2,7 @@ from Animebyter import get_airing
 from asyncio import sleep, Queue, get_event_loop
 from aiohttp import ClientSession
 from JsonStore import JsonStore
-from logging import getLogger
+import logging
 import os
 
 INTERVAL = int(os.getenv("interval","5"))
@@ -11,7 +11,6 @@ QB_URL = os.getenv("qbit_url")
 store = JsonStore(os.getenv("database"))
 dl_queue = Queue(10)
 loop = get_event_loop()
-logger = getLogger("animebyter")
 
 try:
     store["watching"]
@@ -37,10 +36,10 @@ async def login_qb(username=store["qbUser"],password=store["qbPass"]):
         if res.status!=200:
             raise InvalidCredentialsException("Could not authenticate with qBittorrent.")
         else:
-            logger.info("Logged into qBittorrent")
+            logging.info("Logged into qBittorrent")
 
 async def add_anime_torrent(anime):
-    logger.info("Adding episode {} of {}".format(anime.last_episode,anime.title))
+    logging.info("Adding episode {} of {}".format(anime.last_episode,anime.title))
     path = os.path.join(store["downloadPath"],anime.title)
     async with web.post(QB_URL+'/command/download',data={'urls':anime.torrent_link,'savepath':path,'category':store["downloadLabel"]}) as res:
         if res.status==200:
@@ -51,7 +50,7 @@ async def add_anime_torrent(anime):
             raise Exception(await res.text())
 
 async def downloader():
-    logger.info("Starting downloader")
+    logging.info("Starting downloader")
     while True:
         anime = await dl_queue.get()
         while True:
@@ -64,18 +63,18 @@ async def downloader():
                         await login_qb()
                         break
                     except:
-                        logger.warn("Could not log into qBittorrent. Trying again in 5 seconds")
+                        logging.warn("Could not log into qBittorrent. Trying again in 5 seconds")
                         await sleep(5)
                         continue
                 continue
             except Exception as e:
-                logger.error(str(e))
+                logging.error(str(e))
 
 async def checker():
-    logger.info("Starting new episode checker")
+    logging.info("Starting new episode checker")
     while True:
         try:
-            logger.debug("Checking for new episodes")
+            logging.debug("Checking for new episodes")
             airing = await get_airing()
             watching = store["watching"]
             for air in airing:
@@ -85,7 +84,7 @@ async def checker():
                         watching[w_idx]["last_episode"] = air.last_episode
                         store["watching"] = watching
         except Exception as e:
-            logger.error(str(e))
+            logging.error(str(e))
             continue
         finally:
             await sleep(INTERVAL)
