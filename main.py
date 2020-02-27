@@ -4,11 +4,14 @@ from Animebyter import get_airing
 from Downloader import downloader, store, login_qb, InvalidCredentialsException, checker
 from asyncio import get_event_loop,gather
 import os
-from logging import getLogger
+from sys import stdout
+from logging import getLogger, basicConfig, StreamHandler
 
+basicConfig(level=os.getenv('LOGLEVEL', 'INFO').upper(),stream=StreamHandler(stdout))
 logger = getLogger("animebyter")
 app = Quart(__name__,"/static")
 base_url = os.getenv("base_url")
+
 
 class LastAiring:
     airing = []
