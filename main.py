@@ -52,7 +52,7 @@ async def add_show():
         store.ladd("watching",vars(show))
         return redirect(base_url)
     else:
-        return await render_template("error.html", message="Show does not exist")
+        return await render_template("error.html", message="Show does not exist", base_url=base_url)
 
 @app.route("/removeAnime")
 async def remove_show():
@@ -62,7 +62,7 @@ async def remove_show():
         if id == i['id']:
             store.lremvalue("watching",i)
             return redirect(base_url)
-    return await render_template("error.html",message="Show does not exist")
+    return await render_template("error.html",message="Show does not exist", base_url=base_url)
 
 @app.route("/updatePath", methods=["POST"])
 async def set_path():
@@ -90,7 +90,7 @@ async def update_creds():
         store.set("qbPass", password)
         return redirect(base_url)
     except InvalidCredentialsException:
-        return await render_template("error.html", message="Invalid credentials. Try again")
+        return await render_template("error.html", message="Invalid credentials. Try again", base_url=base_url)
 
 
 if __name__ == '__main__':
