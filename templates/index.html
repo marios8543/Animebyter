@@ -12,13 +12,13 @@
 <body>
   <div id="topbar">
     <h1>ABdown</h1>
-    <form method="POST" action="/updatePath">
+    <form method="POST" action="updatePath">
       Download path: <input type="text" name="path" value="{{ dl_path }}">
     </form>
-    <form method="POST" action="/updateLabel">
+    <form method="POST" action="updateLabel">
       Download label: <input type="text" name="label" value="{{ dl_label }}">
     </form>
-    <form method="POST" action="/updateCreds">
+    <form method="POST" action="updateCreds">
       Username: <input type="text" name="user" value="{{ qb_user }}">
       Password: <input type="password" name="pass" value="********">
       <button type="submit">Login</button>
@@ -39,7 +39,7 @@
           <td>{{ i.title }}</td>
           <td>{{ i.resolution }}</td>
           <td>{{ i.last_episode }}</td>
-          <td><a href="/addAnime?id={{ i.id }}"><button>+</button></a></td>
+          <td><a href="addAnime?id={{ i.id }}"><button>+</button></a></td>
         </tr>
         {% endfor %}
       </tbody>
@@ -60,7 +60,7 @@
           <td class="text">{{ i.title }}</td>
           <td>{{ i.resolution }}</td>
           <td>{{ i.last_episode }}</td>
-          <td><a href="/removeAnime?id={{ i.id }}"><button>-</button></a></td>
+          <td><a href="removeAnime?id={{ i.id }}"><button>-</button></a></td>
         </tr>
         {% endfor %}
       </tbody>

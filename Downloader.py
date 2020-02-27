@@ -13,6 +13,19 @@ dl_queue = Queue(10)
 loop = get_event_loop()
 logger = getLogger("animebyter")
 
+try:
+    store["watching"]
+except KeyError:
+    store["watching"] = []
+try:
+    store["qbUser"]
+except KeyError:
+    store["qbUser"] = ""
+try:
+    store["qbPass"]
+except KeyError:
+    store["qbPass"] = ""
+
 class InvalidCredentialsException(Exception):
     pass
 

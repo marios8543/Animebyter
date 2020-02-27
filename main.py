@@ -8,10 +8,6 @@ from logging import getLogger
 
 logger = getLogger("animebyter")
 app = Quart(__name__,"/static")
-try:
-    store["watching"]
-except KeyError:
-    store["watching"] = []
 
 class LastAiring:
     airing = []
