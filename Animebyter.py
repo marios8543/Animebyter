@@ -3,6 +3,7 @@ from feedparser import parse
 from os import getenv
 from json import dumps
 import logging
+import hashlib
 
 web = ClientSession()
 
@@ -17,7 +18,7 @@ class Anime:
         self.last_episode = le
         self.torrent_link = tl
         self.resolution = res.strip()
-        self.id = str(abs(hash(self)))
+        self.id = str(int(hashlib.sha256(self.title.encode('utf-8')).hexdigest(), 16) % 10**8)
 
 async def get_airing():
     r = []
