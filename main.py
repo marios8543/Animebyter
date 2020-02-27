@@ -7,7 +7,7 @@ import os
 from sys import stdout
 import logging
 
-logging.basicConfig(level=os.getenv('LOGLEVEL', 'INFO').upper(),stream=StreamHandler(stdout))
+logging.basicConfig(level=os.getenv('LOGLEVEL', 'INFO').upper(),stream=logging.StreamHandler(stdout))
 app = Quart(__name__,"/static")
 base_url = os.getenv("base_url")
 
