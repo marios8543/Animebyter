@@ -8,6 +8,7 @@ from logging import getLogger
 
 logger = getLogger("animebyter")
 app = Quart(__name__,"/static")
+base_url = os.getenv("base_url")
 
 class LastAiring:
     airing = []
@@ -50,7 +51,7 @@ async def add_show():
         watching = store["watching"]
         watching.append(vars(show))
         store["watching"] = watching
-        return redirect("/")
+        return redirect(base_url)
     else:
         return await render_template("error.html", message="Show does not exist")
 
@@ -62,7 +63,7 @@ async def remove_show():
         if id == i['id']:
             watching.remove(i)
             store["watching"] = watching
-            return redirect("/")
+            return redirect(base_url)
     return await render_template("error.html",message="Show does not exist")
 
 @app.route("/updatePath", methods=["POST"])
@@ -70,7 +71,7 @@ async def set_path():
     path = (await request.form).get("path")
     if os.path.isdir(path):
         store["downloadPath"] = path
-        return redirect("/")
+        return redirect(base_url)
     else:
         return await render_template("error.html", message="{} is not a valid path".format(path))
 
@@ -78,7 +79,7 @@ async def set_path():
 async def set_label():
     label = (await request.form).get("label")
     store["downloadLabel"] = label
-    return redirect("/")
+    return redirect(base_url)
 
 @app.route("/updateCreds", methods=["POST"])
 async def update_creds():
@@ -89,7 +90,7 @@ async def update_creds():
         await login_qb(username, password)
         store["qbUser"] = username
         store["qbPass"] = password
-        return redirect("/")
+        return redirect(base_url)
     except InvalidCredentialsException:
         return await render_template("error.html", message="Invalid credentials. Try again")
 
