@@ -1,6 +1,6 @@
 from quart import Quart, request, make_response, render_template, redirect
 from Animebyter import get_airing
-from Downloader import downloader, store, login_qb, InvalidCredentialsException, checker
+from Downloader import downloader, store, login_qb, qbLoginException, checker
 from asyncio import get_event_loop,gather
 import os
 from sys import stdout
@@ -28,14 +28,8 @@ async def home():
     airing = await get_airing()
     last_airing.sett(airing)
     watching = store.get("watching")
-    try:
-        dl_path = store.get("downloadPath")
-    except KeyError:
-        dl_path = ""
-    try:
-        dl_label = store.get("downloadLabel")
-    except KeyError:
-        dl_label = ""
+    dl_path = store.get("downloadPath")
+    dl_label = store.get("downloadLabel")
     return await render_template('index.html', airing=airing, watching=[FakeObj(i) for i in watching], dl_path=dl_path, dl_label=dl_label)
 
 @app.route("/addAnime")

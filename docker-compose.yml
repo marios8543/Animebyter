@@ -1,0 +1,25 @@
+version: '3'
+services:
+  animebyter:
+    build: .
+    container_name: animebyter
+    environment:
+        - qbit_url=http://qbittorrent:8080
+        - ab_key=YOUR_ANIMEBYTES_TOKEN
+        - database=/db/animebyter.json
+        - base_url=/animebyter
+        - LOGLEVEL=INFO
+    volumes:
+        - ./db:/db
+    networks:
+        - qbit-network
+        - animebyter-network
+    restart: unless-stopped
+
+networks:
+  animebyter-network:
+    driver: bridge
+
+  qbit-network:
+    external:
+      name: qbittorrent_qbit-network

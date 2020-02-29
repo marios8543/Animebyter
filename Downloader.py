@@ -19,7 +19,7 @@ if not store.exists("qbUser"):
 if not store.exists("qbPass"):
     store.set("qbPass", "")
 
-class InvalidCredentialsException(Exception):
+class qbLoginException(Exception):
     pass
 
 class NotLoggedInException(Exception):
@@ -28,11 +28,11 @@ class NotLoggedInException(Exception):
 class DownloadableItem:
     def __init__(self,anime):
         self.anime = anime
-    
+
     def complete(self):
         watching = store.get("watching")
         for v in watching:
-            if v.id == self.anime.id:
+            if v['id'] == self.anime.id:
                 store.lremvalue("watching",v)
                 v["last_episode"] = self.anime.last_episode
                 store.ladd("watching",v)
@@ -42,7 +42,7 @@ class DownloadableItem:
 async def login_qb(username=store.get("qbUser"),password=store.get("qbPass")):
     async with web.post(QB_URL+'/login',data={'username':username,'password':password}) as res:
         if res.status!=200:
-            raise InvalidCredentialsException("Could not authenticate with qBittorrent.")
+            raise qbLoginException(await res.text())
         else:
             logging.info("Logged into qBittorrent")
 
@@ -65,14 +65,15 @@ async def downloader():
             try:
                 await add_anime_torrent(item.anime)
                 item.complete()
+                logging.info("Added episode {} of {}".format(item.anime.last_episode,item.anime.title))
                 break
             except NotLoggedInException:
                 while True:
                     try:
                         await login_qb()
                         break
-                    except:
-                        logging.warn("Could not log into qBittorrent. Trying again in 5 seconds")
+                    except Exception as e:
+                        logging.warn("Could not log into qBittorrent ({})".format(str(e)))
                         await sleep(5)
                         continue
                 continue
@@ -89,8 +90,8 @@ async def checker():
             watching = store.get("watching")
             for air in airing:
                 for watch in watching:
-                    if air.id == watch['id']:
-                        if air.last_episode >= watch['last_episode']:
+                    if air.id == watch['id'] and air.resolution == watch["resolution"]:
+                        if air.last_episode > watch['last_episode']:
                             logging.debug("Attempting to add episode {} of {}".format(air.last_episode,air.title))
                             item = DownloadableItem(air)
                             loop.create_task(dl_queue.put(item))
