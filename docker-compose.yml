@@ -8,6 +8,7 @@ services:
         - ab_key=YOUR_ANIMEBYTES_TOKEN
         - database=/db/animebyter.json
         - base_url=/animebyter
+        - gotify_url = Gotify_URL
         - LOGLEVEL=INFO
     volumes:
         - ./db:/db

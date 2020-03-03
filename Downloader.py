@@ -39,8 +39,8 @@ class DownloadableItem:
                 return
 
 
-async def login_qb(username=store.get("qbUser"),password=store.get("qbPass")):
-    async with web.post(QB_URL+'/login',data={'username':username,'password':password}) as res:
+async def login_qb(username=store.get("qbUser"),password=store.get("qbPass"), client=web):
+    async with client.post(QB_URL+'/login',data={'username':username,'password':password}) as res:
         if res.status!=200:
             raise qbLoginException(await res.text())
         else:
@@ -57,6 +57,18 @@ async def add_anime_torrent(anime):
         else:
             raise Exception(await res.text())
 
+async def get_last_added():
+    async with web.get(QB_URL+"/query/torrents",params={"category":"Anime","sort":"added_on","reverse":"true"}) as res:
+        if res.status==200:
+            res = await res.json()
+            return res[0]
+
+from Notifications import downloading
+async def add_to_download_list(anime):
+    last = await get_last_added()
+    if last:
+        downloading[last["hash"]] = anime
+
 async def downloader():
     logging.info("Starting downloader")
     while True:
@@ -64,6 +76,7 @@ async def downloader():
         while True:
             try:
                 await add_anime_torrent(item.anime)
+                await add_to_download_list(item.anime)
                 item.complete()
                 logging.info("Added episode {} of {}".format(item.anime.last_episode,item.anime.title))
                 break

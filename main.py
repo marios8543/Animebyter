@@ -1,6 +1,7 @@
 from quart import Quart, request, make_response, render_template, redirect
 from Animebyter import get_airing
 from Downloader import downloader, store, login_qb, qbLoginException, checker
+from Notifications import dl_watchdog
 from asyncio import get_event_loop,gather
 import os
 from sys import stdout
@@ -83,7 +84,7 @@ async def update_creds():
         store.set("qbUser", username)
         store.set("qbPass", password)
         return redirect(base_url)
-    except InvalidCredentialsException:
+    except qbLoginException:
         return await render_template("error.html", message="Invalid credentials. Try again", base_url=base_url)
 
 
@@ -91,4 +92,4 @@ if __name__ == '__main__':
     server_task = app.run_task("0.0.0.0")
     loop = get_event_loop()
 
-    loop.run_until_complete(gather(server_task,downloader(),checker()))
+    loop.run_until_complete(gather(server_task,downloader(),checker(),dl_watchdog()))

@@ -10,6 +10,7 @@
    - Edit the `qbit_url` enironment variable to the hostname of your qbittorrent server. This will typically be your container name (so make sure to set one).
    - Edit the `ab_key` environment variable with your animebytes passkey. You can find this under Settings > Account > Passkey.
    - Edit the `base_url` environment variable with the path that you've set on your reverse proxy. It should be `/` if you run it on a subdomain.
+   - Edit the `gotify_url` to a valid Gotify server URL if you want to receive notifications.
 2) Run `docker-compose up -d`. If you've set-up your docker-compose correctly it should run without problems.
 3) Configure your reverse proxy. The docker-compose.yml provided, exposes a network called `animebyter-network` and names the container `animebyter`. You should edit the deployment of your web-server, making sure it is connected to the `animebyter-network`. The app should then be accessible on `animebyter:5000`. Here's a sample configuration for the caddy webserver:
 ```
